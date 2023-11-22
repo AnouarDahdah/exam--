@@ -1,0 +1,37 @@
+name: OpenFOAM Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install OpenFOAM
+        run: |
+          wget -q -O - https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+          sudo apt-get install -qq openfoam2212-dev
+
+      - name: Setup OpenFOAM environment
+        run: |
+          source /opt/OpenFOAM/OpenFOAM-2.2.1/etc/bashrc
+          foamSystemCheck
+
+      - name: Copy Custom Solver
+        run: |
+          cp -r icoFoam $FOAM_USER_APPBIN
+
+      - name: Copy OpenFOAM Case Files
+        run: |
+          cp -r . $HOME/OpenFOAM/case
+
+      - name: Run OpenFOAM Simulation
+        run: |
+          cd $HOME/OpenFOAM/case
+          icoFoam -parallel
