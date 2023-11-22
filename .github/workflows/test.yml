@@ -20,7 +20,7 @@ jobs:
 
       - name: Setup OpenFOAM environment
         run: |
-          source /opt/OpenFOAM/OpenFOAM-2.2.1/etc/bashrc
+          source /opt/OpenFOAM/openfoam2212/etc/bashrc
           foamSystemCheck
 
       - name: Copy Custom Solver
