@@ -1,34 +1,39 @@
-name: OpenFOAM Continuous Integration
+name: Compile
 
+# Controls when the action will run. 
 on:
   push:
-    branches:
-      - main
-
+     branches: [master]
+  
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
+  v2212:
+      name: "v2212"
+      runs-on: ubuntu-22.04
+      steps:
+      - uses: actions/checkout@v2
+      
       - name: Install OpenFOAM
         run: |
           wget -q -O - https://dl.openfoam.com/add-debian-repo.sh | sudo bash
-          sudo apt-get install -qq openfoam2212-dev
+          sudo apt-get install -qq openfoam2212-dev  
+          
+      - name: Build application
+        run: /usr/bin/openfoam2212 wmake -j
+#  v9:
+#      runs-on: ubuntu-22.04
+#      container:
+#        image: ghcr.io/foamscience/jammy-openfoam:9
+#        options: --user openfoam
+#        env:
+#          CATCH_TIMEOUT: 20
 
-      
+#      steps:
+#        - name: Checkout repository
+#          uses: actions/checkout@v3
 
-      - name: Copy Custom Solver
-        run: |
-          cp -r icoFoam $FOAM_USER_APPBIN
-
-      - name: Copy OpenFOAM Case Files
-        run: |
-          cp -r . $HOME/OpenFOAM/case
-
-      - name: Run OpenFOAM Simulation
-        run: |
-          cd $HOME/OpenFOAM/case
-          icoFoam -parallel
+#        - name: Compile and Test
+#          run: |
+#            source /opt/openfoam9/etc/bashrc
+#            mkdir -p $FOAM_USER_LIBBIN
+#            wmake
+        
